@@ -1,6 +1,6 @@
 use logic_form::{Lit, Var};
 use satif::{SatResult, Satif, SatifSat, SatifUnsat};
-use std::ffi::{c_char, c_int, c_void, CStr, CString};
+use std::ffi::{c_char, c_int, c_void, CString};
 
 extern "C" {
     fn kissat_init() -> *mut c_void;
