@@ -1,0 +1,8 @@
+[package]
+name = "kissat-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+logic-form = { path = "../logic-form" }
+satif = { path = "../satif" }

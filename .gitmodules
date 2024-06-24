@@ -1,0 +1,3 @@
+[submodule "kissat"]
+	path = kissat
+	url = git@github.com:gipsyh/kissat.git
