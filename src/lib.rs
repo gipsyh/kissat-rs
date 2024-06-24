@@ -1,6 +1,6 @@
 use logic_form::{Lit, Var};
 use satif::{SatResult, Satif, SatifSat, SatifUnsat};
-use std::ffi::{c_int, c_void};
+use std::ffi::{c_char, c_int, c_void, CStr, CString};
 
 extern "C" {
     fn kissat_init() -> *mut c_void;
@@ -8,6 +8,7 @@ extern "C" {
     fn kissat_add(s: *mut c_void, lit: c_int);
     fn kissat_solve(s: *mut c_void) -> c_int;
     fn kissat_value(s: *mut c_void, lit: c_int) -> c_int;
+    fn kissat_set_option(s: *mut c_void, op: *mut c_char, v: c_int) -> c_int;
 }
 
 fn lit_to_kissat_lit(lit: &Lit) -> i32 {
@@ -64,10 +65,12 @@ impl Satif for Solver {
 
     #[inline]
     fn new() -> Self {
-        Self {
-            solver: unsafe { kissat_init() },
-            num_var: 0,
-        }
+        let solver = unsafe { kissat_init() };
+        #[allow(temporary_cstring_as_ptr)]
+        unsafe {
+            kissat_set_option(solver, CString::new("quiet").unwrap().as_ptr() as *mut _, 1)
+        };
+        Self { solver, num_var: 0 }
     }
 
     #[inline]
