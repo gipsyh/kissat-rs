@@ -32,7 +32,7 @@ pub struct Solver {
 }
 
 impl Solver {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let solver = unsafe { kissat_init() };
         #[allow(temporary_cstring_as_ptr)]
         unsafe {
