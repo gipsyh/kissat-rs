@@ -1,5 +1,5 @@
 use logic_form::{Lit, Var};
-use satif::{SatResult, Satif, SatifSat, SatifUnsat};
+use satif::Satif;
 use std::ffi::{c_char, c_int, c_void, CString};
 
 extern "C" {
@@ -22,36 +22,8 @@ fn lit_to_kissat_lit(lit: &Lit) -> i32 {
 #[allow(unused)]
 fn kissat_lit_to_lit(lit: i32) -> Lit {
     let p = lit > 0;
-    let v = Var::new(lit.abs() as usize - 1);
+    let v = Var::new(lit.unsigned_abs() as usize - 1);
     Lit::new(v, p)
-}
-
-pub struct Sat {
-    solver: *mut c_void,
-}
-
-impl SatifSat for Sat {
-    fn lit_value(&self, lit: Lit) -> Option<bool> {
-        let lit = lit_to_kissat_lit(&lit);
-        let res = unsafe { kissat_value(self.solver, lit) };
-        if res == lit {
-            Some(true)
-        } else if res == -lit {
-            Some(false)
-        } else {
-            None
-        }
-    }
-}
-
-pub struct Unsat {
-    _solver: *mut c_void,
-}
-
-impl SatifUnsat for Unsat {
-    fn has(&self, _lit: Lit) -> bool {
-        panic!("unsupport assumption");
-    }
 }
 
 pub struct Solver {
@@ -60,9 +32,6 @@ pub struct Solver {
 }
 
 impl Satif for Solver {
-    type Sat = Sat;
-    type Unsat = Unsat;
-
     #[inline]
     fn new() -> Self {
         let solver = unsafe { kissat_init() };
@@ -92,19 +61,35 @@ impl Satif for Solver {
         unsafe { kissat_add(self.solver, 0) };
     }
 
-    fn solve(&mut self, assumps: &[Lit]) -> SatResult<Self::Sat, Self::Unsat> {
+    fn solve(&mut self, assumps: &[Lit]) -> bool {
         if !assumps.is_empty() {
             panic!("unsupport assumption");
         }
         match unsafe { kissat_solve(self.solver) } {
-            10 => SatResult::Sat(Sat {
-                solver: self.solver,
-            }),
-            20 => SatResult::Unsat(Unsat {
-                _solver: self.solver,
-            }),
+            10 => true,
+            20 => false,
             _ => unreachable!(),
         }
+    }
+
+    fn sat_value(&mut self, lit: Lit) -> Option<bool> {
+        let lit = lit_to_kissat_lit(&lit);
+        let res = unsafe { kissat_value(self.solver, lit) };
+        if res == lit {
+            Some(true)
+        } else if res == -lit {
+            Some(false)
+        } else {
+            None
+        }
+    }
+
+    fn unsat_has(&mut self, _lit: Lit) -> bool {
+        panic!("unsupport assumption");
+    }
+
+    fn simplify(&mut self) {
+        panic!("unsupport simplify");
     }
 }
 
@@ -131,12 +116,11 @@ fn test() {
     solver.add_clause(&Clause::from([lit1, !lit2]));
     solver.add_clause(&Clause::from([!lit0, !lit1, lit2]));
     solver.add_clause(&Clause::from([lit2]));
-    match solver.solve(&[]) {
-        SatResult::Sat(model) => {
-            assert!(model.lit_value(lit0).unwrap());
-            assert!(model.lit_value(lit1).unwrap());
-            assert!(model.lit_value(lit2).unwrap());
-        }
-        SatResult::Unsat(_) => todo!(),
+    if solver.solve(&[]) {
+        assert!(solver.sat_value(lit0).unwrap());
+        assert!(solver.sat_value(lit1).unwrap());
+        assert!(solver.sat_value(lit2).unwrap());
+    } else {
+        panic!()
     }
 }
