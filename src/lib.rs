@@ -31,8 +31,7 @@ pub struct Solver {
     num_var: usize,
 }
 
-impl Satif for Solver {
-    #[inline]
+impl Solver {
     fn new() -> Self {
         let solver = unsafe { kissat_init() };
         #[allow(temporary_cstring_as_ptr)]
@@ -41,7 +40,9 @@ impl Satif for Solver {
         };
         Self { solver, num_var: 0 }
     }
+}
 
+impl Satif for Solver {
     #[inline]
     fn new_var(&mut self) -> Var {
         self.num_var += 1;
