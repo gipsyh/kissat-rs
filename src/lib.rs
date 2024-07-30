@@ -83,14 +83,6 @@ impl Satif for Solver {
             None
         }
     }
-
-    fn unsat_has(&mut self, _lit: Lit) -> bool {
-        panic!("unsupport assumption");
-    }
-
-    fn simplify(&mut self) {
-        panic!("unsupport simplify");
-    }
 }
 
 impl Drop for Solver {
