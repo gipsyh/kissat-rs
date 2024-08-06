@@ -1,6 +1,11 @@
 use logic_form::{Lit, Var};
 use satif::Satif;
-use std::ffi::{c_char, c_int, c_void, CString};
+use std::{
+    ffi::{c_char, c_int, c_void, CString},
+    sync::mpsc::channel,
+    thread::spawn,
+    time::Duration,
+};
 
 extern "C" {
     fn kissat_init() -> *mut c_void;
@@ -74,6 +79,28 @@ impl Satif for Solver {
         }
     }
 
+    fn solve_with_limit(&mut self, assumps: &[Lit], limit: Duration) -> Option<bool> {
+        if !assumps.is_empty() {
+            panic!("unsupport assumption");
+        }
+        let solver = self.solver as usize;
+        let (tx, rx) = channel();
+        let join = spawn(move || {
+            tx.send(unsafe { kissat_solve(solver as *mut c_void) })
+                .unwrap()
+        });
+        match rx.recv_timeout(limit) {
+            Ok(10) => Some(true),
+            Ok(20) => Some(false),
+            Err(_) => {
+                self.terminate();
+                join.join().unwrap();
+                return None;
+            }
+            _ => unreachable!(),
+        }
+    }
+
     fn sat_value(&mut self, lit: Lit) -> Option<bool> {
         let lit = lit_to_kissat_lit(&lit);
         let res = unsafe { kissat_value(self.solver, lit) };
@@ -104,6 +131,10 @@ impl Default for Solver {
         Self::new()
     }
 }
+
+unsafe impl Sync for Solver {}
+
+unsafe impl Send for Solver {}
 
 #[test]
 fn test() {
