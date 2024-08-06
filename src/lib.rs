@@ -9,6 +9,7 @@ extern "C" {
     fn kissat_solve(s: *mut c_void) -> c_int;
     fn kissat_value(s: *mut c_void, lit: c_int) -> c_int;
     fn kissat_set_option(s: *mut c_void, op: *mut c_char, v: c_int) -> c_int;
+    fn kissat_terminate(s: *mut c_void);
 }
 
 fn lit_to_kissat_lit(lit: &Lit) -> i32 {
@@ -83,6 +84,12 @@ impl Satif for Solver {
         } else {
             None
         }
+    }
+}
+
+impl Solver {
+    pub fn terminate(&mut self) {
+        unsafe { kissat_terminate(self.solver) }
     }
 }
 
