@@ -2,6 +2,7 @@
 name = "satif-kissat"
 version = "0.2.0"
 edition = "2021"
+license = "MIT"
 description = "Rust wrapper for the kissat SAT solver"
 repository = "https://github.com/gipsyh/kissat-rs"
 authors = ["Yuheng Su <gipsyh.icu@gmail.com>"]
