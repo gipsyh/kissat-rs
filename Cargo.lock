@@ -43,14 +43,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
-name = "kissat"
-version = "0.1.0"
-dependencies = [
- "logic-form",
- "satif",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -64,7 +56,7 @@ checksum = "97b3888a4aecf77e811145cadf6eef5901f4782c53886191b2f693f24761847c"
 
 [[package]]
 name = "logic-form"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "ahash",
  "giputils",
@@ -107,6 +99,14 @@ name = "satif"
 version = "0.1.0"
 dependencies = [
  "logic-form",
+]
+
+[[package]]
+name = "satif-kissat"
+version = "0.2.0"
+dependencies = [
+ "logic-form",
+ "satif",
 ]
 
 [[package]]
