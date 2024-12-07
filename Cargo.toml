@@ -1,6 +1,6 @@
 [package]
 name = "satif-kissat"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 license = "MIT"
 description = "Rust wrapper for the kissat SAT solver"
@@ -10,3 +10,6 @@ authors = ["Yuheng Su <gipsyh.icu@gmail.com>"]
 [dependencies]
 logic-form = { path = "../logic-form", version = "0.2.0" }
 satif = { path = "../satif", version = "0.1.0" }
+
+[build-dependencies]
+giputils = { path = "../giputils", version = "0.2.0" }

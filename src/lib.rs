@@ -40,7 +40,7 @@ pub struct Solver {
 impl Solver {
     pub fn new() -> Self {
         let solver = unsafe { kissat_init() };
-        #[allow(temporary_cstring_as_ptr)]
+        #[allow(dangling_pointers_from_temporaries)]
         unsafe {
             kissat_set_option(solver, CString::new("quiet").unwrap().as_ptr() as *mut _, 1)
         };
