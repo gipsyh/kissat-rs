@@ -87,7 +87,7 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 
 [[package]]
 name = "logic-form"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "ahash",
  "giputils",
@@ -140,14 +140,14 @@ checksum = "955d28af4278de8121b7ebeb796b6a45735dc01436d898801014aced2773a3d6"
 
 [[package]]
 name = "satif"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "logic-form",
 ]
 
 [[package]]
 name = "satif-kissat"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "giputils",
  "logic-form",
