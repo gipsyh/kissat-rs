@@ -30,6 +30,5 @@ fn main() -> Result<(), String> {
         cb_path.join("build").display()
     );
     println!("cargo:rustc-link-lib=static=kissat");
-    println!("cargo:rustc-link-lib=dylib=stdc++");
     Ok(())
 }
