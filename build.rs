@@ -6,10 +6,7 @@ use std::process::Command;
 extern crate giputils;
 
 fn main() -> Result<(), String> {
-    Command::new("git")
-        .args(["submodule", "update", "--init"])
-        .status()
-        .unwrap();
+    giputils::build::git_submodule_update()?;
     println!("cargo:rerun-if-changed=./kissat");
     let cb_path = copy_build("kissat", |src| {
         Command::new("sh")
