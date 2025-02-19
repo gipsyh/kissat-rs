@@ -101,7 +101,7 @@ impl Satif for Solver {
         }
     }
 
-    fn sat_value(&mut self, lit: Lit) -> Option<bool> {
+    fn sat_value(&self, lit: Lit) -> Option<bool> {
         let lit = lit_to_kissat_lit(&lit);
         let res = unsafe { kissat_value(self.solver, lit) };
         if res == lit {
