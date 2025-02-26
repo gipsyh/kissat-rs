@@ -1,13 +1,13 @@
 use logic_form::{Lit, Var};
 use satif::Satif;
 use std::{
-    ffi::{c_char, c_int, c_void, CString},
+    ffi::{CString, c_char, c_int, c_void},
     sync::mpsc::channel,
     thread::spawn,
     time::Duration,
 };
 
-extern "C" {
+unsafe extern "C" {
     fn kissat_init() -> *mut c_void;
     fn kissat_release(s: *mut c_void);
     fn kissat_add(s: *mut c_void, lit: c_int);
