@@ -78,10 +78,17 @@ impl Satif for Solver {
             _ => unreachable!(),
         }
     }
-
-    fn solve_with_limit(&mut self, assumps: &[Lit], limit: Duration) -> Option<bool> {
+    fn solve_with_limit(
+        &mut self,
+        assumps: &[Lit],
+        constraint: Vec<logic_form::LitVec>,
+        limit: Duration,
+    ) -> Option<bool> {
         if !assumps.is_empty() {
             panic!("unsupport assumption");
+        }
+        if !constraint.is_empty() {
+            panic!("unsupport constraint");
         }
         let solver = self.solver as usize;
         let (tx, rx) = channel();
