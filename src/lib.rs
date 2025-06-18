@@ -1,5 +1,4 @@
-use logic_form::{Lit, Var};
-use satif::Satif;
+use logicrs::{Lit, Var, satif::Satif};
 use std::{
     ffi::{CString, c_char, c_int, c_void},
     sync::mpsc::channel,
@@ -81,7 +80,7 @@ impl Satif for Solver {
     fn solve_with_limit(
         &mut self,
         assumps: &[Lit],
-        constraint: Vec<logic_form::LitVec>,
+        constraint: Vec<logicrs::LitVec>,
         limit: Duration,
     ) -> Option<bool> {
         if !assumps.is_empty() {
@@ -145,7 +144,7 @@ unsafe impl Send for Solver {}
 
 #[test]
 fn test() {
-    use logic_form::LitVec;
+    use logicrs::LitVec;
     let mut solver = Solver::new();
     let lit0: Lit = solver.new_var().into();
     let lit1: Lit = solver.new_var().into();
