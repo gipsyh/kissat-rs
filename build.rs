@@ -10,7 +10,9 @@ fn main() -> Result<(), String> {
     println!("cargo:rerun-if-changed=./kissat");
     let cb_path = copy_build("kissat", |src| {
         Command::new("sh")
+            .env("CC", "clang")
             .arg("configure")
+            .arg("-fPIC")
             .current_dir(src)
             .status()
             .map_err(|e| e.to_string())?
