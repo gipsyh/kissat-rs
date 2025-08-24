@@ -13,6 +13,7 @@ fn main() -> Result<(), String> {
             .env("CC", "clang")
             .arg("configure")
             .arg("-fPIC")
+            .arg("--competition")
             .current_dir(src)
             .status()
             .map_err(|e| e.to_string())?
