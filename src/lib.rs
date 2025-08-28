@@ -118,6 +118,16 @@ impl Satif for Solver {
             None
         }
     }
+
+    fn set_seed(&mut self, seed: u64) {
+        unsafe {
+            kissat_set_option(
+                self.solver,
+                CString::new("seed").unwrap().as_ptr() as *mut _,
+                seed as i32,
+            )
+        };
+    }
 }
 
 impl Solver {
