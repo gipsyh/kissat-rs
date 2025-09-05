@@ -1,6 +1,6 @@
 [package]
 name = "satif-kissat"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2024"
 license = "MIT"
 description = "Rust wrapper for the kissat SAT solver"
@@ -8,7 +8,7 @@ repository = "https://github.com/gipsyh/kissat-rs"
 authors = ["Yuheng Su <gipsyh.icu@gmail.com>"]
 
 [dependencies]
-logicrs = { path = "../logicrs", version = "0.5.0" }
+logicrs = { path = "../logicrs", version = "0.6.0" }
 
 [build-dependencies]
-giputils = { path = "../giputils", version = "0.3.3" }
+giputils = { path = "../giputils", version = "0.3.5" }
