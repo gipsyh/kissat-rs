@@ -31,12 +31,12 @@ fn kissat_lit_to_lit(lit: i32) -> Lit {
     Lit::new(v, p)
 }
 
-pub struct Solver {
+pub struct Kissat {
     solver: *mut c_void,
     num_var: usize,
 }
 
-impl Solver {
+impl Kissat {
     pub fn new() -> Self {
         let solver = unsafe { kissat_init() };
         #[allow(dangling_pointers_from_temporaries)]
@@ -47,7 +47,7 @@ impl Solver {
     }
 }
 
-impl Satif for Solver {
+impl Satif for Kissat {
     #[inline]
     fn new_var(&mut self) -> Var {
         self.num_var += 1;
@@ -130,32 +130,32 @@ impl Satif for Solver {
     }
 }
 
-impl Solver {
+impl Kissat {
     pub fn terminate(&mut self) {
         unsafe { kissat_terminate(self.solver) }
     }
 }
 
-impl Drop for Solver {
+impl Drop for Kissat {
     fn drop(&mut self) {
         unsafe { kissat_release(self.solver) }
     }
 }
 
-impl Default for Solver {
+impl Default for Kissat {
     fn default() -> Self {
         Self::new()
     }
 }
 
-unsafe impl Sync for Solver {}
+unsafe impl Sync for Kissat {}
 
-unsafe impl Send for Solver {}
+unsafe impl Send for Kissat {}
 
 #[test]
 fn test() {
     use logicrs::LitVec;
-    let mut solver = Solver::new();
+    let mut solver = Kissat::new();
     let lit0: Lit = solver.new_var().into();
     let lit1: Lit = solver.new_var().into();
     let lit2: Lit = solver.new_var().into();
