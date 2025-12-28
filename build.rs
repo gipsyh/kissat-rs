@@ -1,32 +1,37 @@
-#![feature(exit_status_error)]
-
 use giputils::build::copy_build;
-use std::env;
 use std::process::Command;
+use std::{env, io};
 extern crate giputils;
 
-fn main() -> Result<(), String> {
+fn main() -> io::Result<()> {
     giputils::build::git_submodule_update()?;
     println!("cargo:rerun-if-changed=./kissat");
     let cb_path = copy_build("kissat", |src| {
-        Command::new("sh")
+        let status = Command::new("sh")
             .env("CC", "clang")
             .arg("configure")
             .arg("-fPIC")
             .arg("--competition")
             .current_dir(src)
-            .status()
-            .map_err(|e| e.to_string())?
-            .exit_ok()
-            .map_err(|e| e.to_string())?;
+            .status()?;
+        if !status.success() {
+            return Err(io::Error::other(format!(
+                "configure failed with status: {}",
+                status
+            )));
+        }
         let num_jobs = env::var("NUM_JOBS").unwrap();
-        Command::new("make")
+        let status = Command::new("make")
             .arg(format!("-j{num_jobs}"))
             .current_dir(src)
-            .status()
-            .map_err(|e| e.to_string())?
-            .exit_ok()
-            .map_err(|e| e.to_string())
+            .status()?;
+        if !status.success() {
+            return Err(io::Error::other(format!(
+                "make failed with status: {}",
+                status
+            )));
+        }
+        Ok(())
     })?;
     println!(
         "cargo:rustc-link-search=native={}",
