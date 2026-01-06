@@ -9,6 +9,7 @@ authors = ["Yuheng Su <gipsyh.icu@gmail.com>"]
 
 [dependencies]
 logicrs = { path = "../logicrs", version = "0.6.0" }
+giputils = { path = "../giputils", version = "0.3.6" }
 
 [build-dependencies]
-giputils = { path = "../giputils", version = "0.3.5" }
+giputils = { path = "../giputils", version = "0.3.6" }

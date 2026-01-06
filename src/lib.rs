@@ -1,10 +1,6 @@
-use logicrs::{Lit, Var, satif::Satif};
-use std::{
-    ffi::{CString, c_char, c_int, c_void},
-    sync::mpsc::channel,
-    thread::spawn,
-    time::Duration,
-};
+use giputils::StopCtrl;
+use logicrs::{Lit, LitVec, Var, satif::Satif};
+use std::ffi::{CString, c_char, c_int, c_void};
 
 unsafe extern "C" {
     fn kissat_init() -> *mut c_void;
@@ -74,36 +70,25 @@ impl Satif for Kissat {
         match unsafe { kissat_solve(self.solver) } {
             10 => true,
             20 => false,
-            _ => unreachable!(),
+            _ => panic!(),
         }
     }
-    fn solve_with_limit(
-        &mut self,
-        assumps: &[Lit],
-        constraint: Vec<logicrs::LitVec>,
-        limit: Duration,
-    ) -> Option<bool> {
+
+    fn solve_with_constraint(&mut self, assumps: &[Lit], constraint: Vec<LitVec>) -> bool {
+        self.try_solve(assumps, constraint).unwrap()
+    }
+
+    fn try_solve(&mut self, assumps: &[Lit], constraint: Vec<LitVec>) -> Option<bool> {
         if !assumps.is_empty() {
             panic!("unsupport assumption");
         }
         if !constraint.is_empty() {
             panic!("unsupport constraint");
         }
-        let solver = self.solver as usize;
-        let (tx, rx) = channel();
-        let join = spawn(move || {
-            tx.send(unsafe { kissat_solve(solver as *mut c_void) })
-                .unwrap()
-        });
-        match rx.recv_timeout(limit) {
-            Ok(10) => Some(true),
-            Ok(20) => Some(false),
-            Err(_) => {
-                self.terminate();
-                join.join().unwrap();
-                None
-            }
-            _ => unreachable!(),
+        match unsafe { kissat_solve(self.solver) } {
+            10 => Some(true),
+            20 => Some(false),
+            _ => panic!(),
         }
     }
 
@@ -128,6 +113,12 @@ impl Satif for Kissat {
             )
         };
     }
+
+    fn get_stop_ctrl(&mut self) -> Box<dyn StopCtrl> {
+        Box::new(KissatStopCtrl {
+            solver: self.solver,
+        })
+    }
 }
 
 impl Kissat {
@@ -151,6 +142,18 @@ impl Default for Kissat {
 unsafe impl Sync for Kissat {}
 
 unsafe impl Send for Kissat {}
+
+struct KissatStopCtrl {
+    solver: *mut c_void,
+}
+
+impl StopCtrl for KissatStopCtrl {
+    fn stop(&mut self) {
+        unsafe {
+            kissat_terminate(self.solver);
+        }
+    }
+}
 
 #[test]
 fn test() {
