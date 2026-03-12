@@ -2,7 +2,6 @@
 use cmake::Config;
 
 fn main() -> Result<(), String> {
-    giputils::build::git_submodule_update()?;
     println!("cargo:rerun-if-changed=./kissat");
     println!("cargo:rerun-if-changed=./CMakeLists.txt");
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
