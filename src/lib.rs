@@ -1,4 +1,4 @@
-use giputils::StopCtrl;
+use giputils::TerminateCtrl;
 use logicrs::{Lit, LitVec, Var, satif::Satif};
 use std::ffi::{CString, c_char, c_int, c_void};
 
@@ -88,7 +88,7 @@ impl Satif for Kissat {
         match unsafe { kissat_solve(self.solver) } {
             10 => Some(true),
             20 => Some(false),
-            _ => panic!(),
+            _ => None,
         }
     }
 
@@ -114,8 +114,8 @@ impl Satif for Kissat {
         };
     }
 
-    fn get_stop_ctrl(&mut self) -> Box<dyn StopCtrl> {
-        Box::new(KissatStopCtrl {
+    fn get_terminate_ctrl(&mut self) -> Box<dyn TerminateCtrl> {
+        Box::new(KissatTerminateCtrl {
             solver: self.solver,
         })
     }
@@ -143,12 +143,15 @@ unsafe impl Sync for Kissat {}
 
 unsafe impl Send for Kissat {}
 
-struct KissatStopCtrl {
+struct KissatTerminateCtrl {
     solver: *mut c_void,
 }
 
-impl StopCtrl for KissatStopCtrl {
-    fn stop(&mut self) {
+unsafe impl Send for KissatTerminateCtrl {}
+unsafe impl Sync for KissatTerminateCtrl {}
+
+impl TerminateCtrl for KissatTerminateCtrl {
+    fn terminate(&self) {
         unsafe {
             kissat_terminate(self.solver);
         }
