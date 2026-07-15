@@ -64,13 +64,11 @@ impl Satif for Kissat {
     }
 
     fn solve(&mut self, assumps: &[Lit]) -> bool {
-        if !assumps.is_empty() {
-            panic!("unsupport assumption");
-        }
+        debug_assert!(assumps.is_empty());
         match unsafe { kissat_solve(self.solver) } {
             10 => true,
             20 => false,
-            _ => panic!(),
+            _ => unreachable!(),
         }
     }
 
@@ -79,12 +77,8 @@ impl Satif for Kissat {
     }
 
     fn try_solve(&mut self, assumps: &[Lit], constraint: Vec<LitVec>) -> Option<bool> {
-        if !assumps.is_empty() {
-            panic!("unsupport assumption");
-        }
-        if !constraint.is_empty() {
-            panic!("unsupport constraint");
-        }
+        debug_assert!(assumps.is_empty());
+        debug_assert!(constraint.is_empty());
         match unsafe { kissat_solve(self.solver) } {
             10 => Some(true),
             20 => Some(false),
